@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Data;
+using Core.Interfaces.Repositories;
+using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,9 +32,12 @@ namespace API
         {
             services.AddControllers();
 
-            services.AddDbContext<ProductContext>(x => 
+            services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+
+            services.AddDbContext<STContext>(x => 
                 x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
             );
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
