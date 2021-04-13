@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Helper;
 using Core.Interfaces.Repositories;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
@@ -31,6 +32,8 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddAutoMapper(typeof(MappingProfiles));
 
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
 
