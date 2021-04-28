@@ -9,7 +9,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BasketController : ControllerBase
+    public class BasketController : BaseApiController
     {
         private readonly IBasketRepository _basketRepository;
         private readonly IMapper _mapper;

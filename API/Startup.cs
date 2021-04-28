@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Errors;
 using API.Helper;
+using API.Middleware;
 using Core.Interfaces.Repositories;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
@@ -46,6 +48,18 @@ namespace API
                 return ConnectionMultiplexer.Connect(config);
             });
 
+            services.Configure<ApiBehaviorOptions>(option => {
+                option.InvalidModelStateResponseFactory = actionContext => {
+                    var errors = actionContext.ModelState.Where(e => e.Value.Errors.Count > 0)
+                    .SelectMany(x=>x.Value.Errors)
+                    .Select(x=>x.ErrorMessage).ToArray();
+                    var errorResponse = new ApiValidationErrorResponse{
+                        Errors = errors
+                    };
+                    return new BadRequestObjectResult(errorResponse);
+                };
+            });
+
             services.AddDbContext<STContext>(x => 
                 x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
             );
@@ -59,12 +73,15 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleware>();
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
+
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             app.UseHttpsRedirection();
 
