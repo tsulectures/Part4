@@ -7,7 +7,7 @@ namespace Infrastructure.Data
 {
     public class STContext : DbContext
     {
-        public STContext(DbContextOptions options) : base(options)
+        public STContext(DbContextOptions<STContext> options) : base(options)
         {
         }
 

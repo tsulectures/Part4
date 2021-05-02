@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Errors;
+using API.Extensions;
 using API.Helper;
 using API.Middleware;
 using Core.Interfaces.Repositories;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -60,10 +62,17 @@ namespace API
                 };
             });
 
+            services.AddIdentityService(Configuration);
+
             services.AddDbContext<STContext>(x => 
                 x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
             );
             
+            services.AddDbContext<AppIdentityDbContext>(x => 
+                x.UseSqlite(Configuration.GetConnectionString("IdentityConnection"))
+            );
+            
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
