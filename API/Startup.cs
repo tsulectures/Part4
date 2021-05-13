@@ -6,10 +6,12 @@ using API.Errors;
 using API.Extensions;
 using API.Helper;
 using API.Middleware;
+using Core.Interfaces;
 using Core.Interfaces.Repositories;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -43,6 +45,7 @@ namespace API
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
 
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<ITokenService,TokenService>();
 
             services.AddSingleton<IConnectionMultiplexer>(c=>{
                 var config = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"), true);
@@ -95,6 +98,8 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
